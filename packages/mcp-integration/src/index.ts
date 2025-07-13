@@ -90,20 +90,15 @@ export class MCPClient {
     const startTime = Date.now()
     
     try {
-      const response = await fetch(this.config.remoteServerUrl, {
+      const response = await fetch(`${this.config.remoteServerUrl}/query`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.MCP_API_KEY || ''}`
         },
         body: JSON.stringify({
-          method: 'tools/call',
-          params: {
-            name: 'execute_query',
-            arguments: {
-              query: query.query,
-              params: query.params || []
-            }
-          }
+          query: query.query,
+          params: query.params || []
         })
       })
 
@@ -190,7 +185,7 @@ export class MCPClient {
 export function createMCPClient(config: Partial<MCPClientConfig> = {}): MCPClient {
   const defaultConfig: MCPClientConfig = {
     localDbPath: './apps/api/dev.db',
-    remoteServerUrl: 'https://mcp-sqlite-server.onrender.com',
+    remoteServerUrl: process.env.MCP_SERVER_URL || 'https://mcp-sqlite-backend.onrender.com',
     timeout: 10000,
     retries: 3
   }
