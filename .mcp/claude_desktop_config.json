@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "scout-analytics-db": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-server-sqlite",
+        "--db-path",
+        "./apps/api/dev.db"
+      ]
+    },
+    "remote-mcp-server": {
+      "command": "curl",
+      "args": [
+        "-X", "POST",
+        "https://mcp-sqlite-server.onrender.com/query",
+        "-H", "Content-Type: application/json",
+        "-d", "@-"
+      ]
+    }
+  }
+}

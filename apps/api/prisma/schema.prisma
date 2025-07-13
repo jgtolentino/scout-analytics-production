@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(VIEWER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  userId    String
+  storeId   String
+  productId String
+  amount    Float
+  quantity  Int
+  timestamp DateTime @default(now())
+  status    TransactionStatus @default(PENDING)
+  
+  user    User    @relation(fields: [userId], references: [id])
+  store   Store   @relation(fields: [storeId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  
+  @@index([userId])
+  @@index([storeId])
+  @@index([productId])
+  @@index([timestamp])
+}
+
+model Store {
+  id        String   @id @default(cuid())
+  name      String
+  location  String
+  region    String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  transactions Transaction[]
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  name      String
+  category  String
+  price     Float
+  sku       String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  transactions Transaction[]
+}
+
+enum Role {
+  ADMIN
+  ANALYST
+  VIEWER
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+}

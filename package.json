@@ -1,0 +1,50 @@
+{
+  "name": "scout-analytics-production",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "test:integration": "turbo test:integration",
+    "test:e2e": "turbo test:e2e",
+    "clean": "turbo clean && rm -rf node_modules",
+    "setup": "pnpm install && pnpm qa:validate",
+    "db:push": "cd apps/api && pnpm db:push",
+    "db:seed": "cd apps/api && pnpm db:seed",
+    "db:studio": "cd apps/api && pnpm db:studio",
+    "db:validate": "cd apps/api && pnpm db:validate",
+    "qa:validate": "pnpm qa:types && pnpm qa:api-contracts && pnpm qa:db-integrity && pnpm qa:env",
+    "qa:types": "tsx qa/type-alignment/validate-types.ts",
+    "qa:api-contracts": "tsx qa/api-contracts/validate-contracts.ts",
+    "qa:db-integrity": "tsx qa/db-validation/validate-schema.ts",
+    "qa:env": "tsx qa/integration-tests/validate-env.ts",
+    "monitor:setup": "tsx tools/scripts/setup-monitoring.ts",
+    "security:scan": "tsx tools/scripts/security-scan.ts",
+    "performance:audit": "tsx tools/scripts/performance-audit.ts",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "deploy": "pnpm qa:validate && turbo build && turbo deploy",
+    "mcp:install": "npm install -g @modelcontextprotocol/cli",
+    "mcp:setup": "mcp install @modelcontextprotocol/server-sqlite",
+    "mcp:local": "mcp-server-sqlite --db-path ./apps/api/dev.db",
+    "mcp:test": "curl -X POST http://localhost:3001/api/mcp/kpis -H 'Content-Type: application/json'"
+  },
+  "devDependencies": {
+    "@turbo/gen": "^1.11.2",
+    "prettier": "^3.1.1",
+    "tsx": "^4.6.2",
+    "turbo": "^1.11.2",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@8.14.0",
+  "dependencies": {
+    "dotenv": "^17.2.0"
+  }
+}
